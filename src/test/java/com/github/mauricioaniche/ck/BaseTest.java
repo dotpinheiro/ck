@@ -17,6 +17,7 @@ import static com.github.mauricioaniche.ck.AssertResult.assertResultNotNull;
 public abstract class BaseTest {
 
 	protected Map<String, CKClassResult> report;
+	protected CK ck;
 
 	protected static String fixturesDir() {
 		try {
@@ -39,12 +40,13 @@ public abstract class BaseTest {
 		}
 	}
 
-	protected static Map<String, CKClassResult> run(String dir) {
-		Map<String, CKClassResult> map = new HashMap<>();
-		new CK().calculate(dir, new CKNotifier() {
+	protected Map<String, CKClassResult> run(String dir) {
+		ck = new CK();
+		report = new HashMap<>();
+		ck.calculate(dir, new CKNotifier() {
 			@Override
 			public void notify(CKClassResult result) {
-				map.put(result.getClassName(), result);
+				report.put(result.getClassName(), result);
 			}
 
 			@Override
@@ -52,7 +54,7 @@ public abstract class BaseTest {
 				Assertions.fail(sourceFilePath, e);
 			}
 		});
-		return map;
+		return report;
 	}
 
 	protected static Map<String, CKClassResult> runDebug(String dir) {
