@@ -17,7 +17,6 @@ import static com.github.mauricioaniche.ck.AssertResult.assertResultNotNull;
 public abstract class BaseTest {
 
 	protected Map<String, CKClassResult> report;
-	protected CK ck;
 
 	protected static String fixturesDir() {
 		try {
@@ -30,10 +29,10 @@ public abstract class BaseTest {
 
 	@Test
 	public void checkNulls() {
-		if(report==null)
+		if (report == null)
 			return;
 
-		for(String reportedClass : report.keySet()) {
+		for (String reportedClass : report.keySet()) {
 			// no nulls in getters of the class
 			CKClassResult ckClassResult = report.get(reportedClass);
 			assertResultNotNull(ckClassResult);
@@ -41,9 +40,8 @@ public abstract class BaseTest {
 	}
 
 	protected Map<String, CKClassResult> run(String dir) {
-		ck = new CK();
-		report = new HashMap<>();
-		ck.calculate(dir, new CKNotifier() {
+		Map<String, CKClassResult> map = new HashMap<>();
+		new CK().calculate(dir, new CKNotifier() {
 			@Override
 			public void notify(CKClassResult result) {
 				report.put(result.getClassName(), result);
@@ -54,14 +52,15 @@ public abstract class BaseTest {
 				Assertions.fail(sourceFilePath, e);
 			}
 		});
-		return report;
+		return map;
 	}
 
 	protected static Map<String, CKClassResult> runDebug(String dir) {
 		return runDebug(dir, () -> Arrays.asList(new ASTDebugger()), () -> Collections.emptyList());
 	}
 
-	protected static Map<String, CKClassResult> runDebug(String dir, Callable<List<ClassLevelMetric>> classLevelMetrics, Callable<List<MethodLevelMetric>> methodLevelMetrics) {
+	protected static Map<String, CKClassResult> runDebug(String dir, Callable<List<ClassLevelMetric>> classLevelMetrics,
+			Callable<List<MethodLevelMetric>> methodLevelMetrics) {
 		Map<String, CKClassResult> map = new HashMap<>();
 		new CK(classLevelMetrics, methodLevelMetrics).calculate(dir, new CKNotifier() {
 			@Override
